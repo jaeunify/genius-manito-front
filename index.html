@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>마니또 · 입사 1주년</title>
+  <meta name="description" content="몰래 챙기는 우리들의 비밀, 마니또" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <main id="app">
+    <!-- ────── 로그인 ────── -->
+    <section class="screen" id="screen-login" hidden>
+      <div class="hero">
+        <p class="eyebrow">입사 1주년 · 몰래 챙기는 우리들의 비밀</p>
+        <h1 class="logo">마니또</h1>
+        <p class="hero-sub">당신은 누구인가요?<br />이름을 고르면 그대로 고정돼요.</p>
+      </div>
+      <div class="name-grid" id="name-grid" role="listbox" aria-label="이름 선택">
+        <p class="loading">불러오는 중…</p>
+      </div>
+    </section>
+
+    <!-- ────── 메인 ────── -->
+    <section class="screen" id="screen-main" hidden>
+      <header class="topbar">
+        <span class="who">안녕, <b id="main-name">-</b> 님</span>
+      </header>
+      <div class="main-choice">
+        <button class="choice-card receive" data-nav="receive">
+          <span class="choice-emoji">💌</span>
+          <span class="choice-title">마니또 받기</span>
+          <span class="choice-desc">내 정보 남기고<br />마니또의 편지 확인</span>
+          <span class="badge" id="badge-receive" hidden></span>
+        </button>
+        <button class="choice-card give" data-nav="give">
+          <span class="choice-emoji">🎁</span>
+          <span class="choice-title">마니또 하기</span>
+          <span class="choice-desc">내가 챙길 사람에게<br />선물 위치 쪽지 남기기</span>
+          <span class="badge" id="badge-give" hidden></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ────── 마니또 받기 ────── -->
+    <section class="screen" id="screen-receive" hidden>
+      <header class="topbar">
+        <button class="back" data-nav="main" aria-label="뒤로">←</button>
+        <h2 class="page-title">💌 마니또 받기</h2>
+      </header>
+
+      <div class="panel">
+        <h3 class="panel-title">나의 정보</h3>
+        <p class="panel-hint">마니또가 당신을 잘 챙길 수 있게 알려주세요.</p>
+        <form id="profile-form" class="form">
+          <label class="field">
+            <span>내 자리는 어디인가요?</span>
+            <input type="text" id="pf-seat" placeholder="예) 5층 A구역 창가 3번째" maxlength="60" />
+          </label>
+          <fieldset class="field">
+            <span>다음 주 편한 날짜 (여러 개 선택 가능)</span>
+            <div class="days" id="pf-days">
+              <label><input type="checkbox" value="mon" /><span>월</span></label>
+              <label><input type="checkbox" value="tue" /><span>화</span></label>
+              <label><input type="checkbox" value="wed" /><span>수</span></label>
+              <label><input type="checkbox" value="thu" /><span>목</span></label>
+            </div>
+          </fieldset>
+          <label class="field">
+            <span>하는 일 / 나 소개</span>
+            <textarea id="pf-intro" rows="3" placeholder="예) 서버개발팀에서 일해요. 커피를 좋아하고..." maxlength="200"></textarea>
+          </label>
+          <label class="field">
+            <span>선물은 여기 두면 돼요 (비밀 공간)</span>
+            <input type="text" id="pf-giftspot" placeholder="예) 책상 3번째 서랍, 사물함 위" maxlength="80" />
+          </label>
+          <label class="field">
+            <span>연락처 <em>(호스트 전용 · 1년 뒤 마니또를 알려드려요)</em></span>
+            <input type="text" id="pf-contact" placeholder="예) 010-0000-0000" maxlength="40" />
+          </label>
+          <button type="submit" class="btn primary">저장하기</button>
+          <p class="form-msg" id="profile-msg" hidden></p>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel-title">마니또로부터 온 편지</h3>
+        <div class="letter" id="letter-box">
+          <p class="letter-empty">아직 편지가 도착하지 않았어요. 조금만 기다려요 :)</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel-title">마니또에게 보내는 쪽지</h3>
+        <p class="panel-hint">딱 한 번, 짧은 감사 인사를 보낼 수 있어요. (50자)</p>
+        <form id="reply-form" class="form">
+          <label class="field">
+            <textarea id="reply-text" rows="2" placeholder="예) 마니또님 감사해요! 덕분에 행복했어요 :)" maxlength="50"></textarea>
+            <small class="counter"><span id="reply-count">0</span>/50</small>
+          </label>
+          <button type="submit" class="btn primary" id="reply-btn">보내기</button>
+          <p class="form-msg" id="reply-msg" hidden></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ────── 마니또 하기 ────── -->
+    <section class="screen" id="screen-give" hidden>
+      <header class="topbar">
+        <button class="back" data-nav="main" aria-label="뒤로">←</button>
+        <h2 class="page-title">🎁 마니또 하기</h2>
+      </header>
+
+      <div class="panel">
+        <h3 class="panel-title">내가 챙길 사람</h3>
+        <div class="target-card" id="target-card">
+          <p class="loading">불러오는 중…</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel-title">선물 주고, 위치 쪽지 남기기</h3>
+        <p class="panel-hint">반말로 편하게! 선물을 어디 숨겼는지 알려주세요.</p>
+        <form id="gift-form" class="form">
+          <label class="field">
+            <textarea id="gift-text" rows="4" placeholder="안녕!! 나는 너의 마니또야. 입사 1주년 축하해 ㅎㅎ 너의 선물은 ___에 숨겨 두었어!" maxlength="300"></textarea>
+          </label>
+          <button type="submit" class="btn primary">쪽지 남기기</button>
+          <p class="form-msg" id="gift-msg" hidden></p>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel-title">받은 감사 쪽지</h3>
+        <div class="letter small" id="reply-received-box">
+          <p class="letter-empty">아직 답장이 없어요.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ────── 팝업: 이름 확인 ────── -->
+  <div class="modal-overlay" id="modal-confirm" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <p class="modal-emoji">🤔</p>
+      <h3 class="modal-title"><b id="confirm-name">-</b> 님이 맞나요?</h3>
+      <p class="modal-desc">한 번 선택하면 바꿀 수 없어요.<br />다른 사람에겐 이 이름이 더 이상 보이지 않아요.</p>
+      <div class="modal-actions">
+        <button class="btn ghost" id="confirm-no">아니요</button>
+        <button class="btn primary" id="confirm-yes">네, 맞아요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────── 팝업: 마니또 공개 ────── -->
+  <div class="modal-overlay reveal" id="modal-reveal" hidden>
+    <div class="modal">
+      <p class="modal-desc reveal-lead">당신이 몰래 챙길<br />마니또는 누구일까요?</p>
+      <button class="giftbox" id="giftbox" aria-label="선물상자 열기">
+        <span class="giftbox-lid"></span>
+        <span class="giftbox-body">🎁</span>
+        <span class="giftbox-tap">눌러서 열어보기</span>
+      </button>
+      <div class="reveal-result" id="reveal-result" hidden>
+        <p class="reveal-label">당신의 마니또는…</p>
+        <p class="reveal-name" id="reveal-name">-</p>
+        <p class="reveal-note">이 사람을 몰래 챙겨주세요 🤫</p>
+        <button class="btn primary" id="reveal-confirm">확인했어요</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+/* ─────────────────────────────────────────────
+   마니또 · 입사 1주년  —  Red theme
+   Deep crimson ground · ribbon-red accent · cream letters
+   ───────────────────────────────────────────── */
+:root {
+  --bg-0: #2a060c;
+  --bg-1: #4a0b16;
+  --bg-2: #6d0f1e;
+  --red: #ff4d5e;
+  --red-deep: #e02637;
+  --red-soft: #ff7a86;
+  --gold: #f6c453;
+  --paper: #fbf1e2;
+  --paper-line: #e7d6bf;
+  --ink: #3a2418;
+  --ink-soft: #7a5c48;
+  --text: #ffe9ec;
+  --text-mut: #d99aa2;
+  --card: rgba(255, 255, 255, 0.06);
+  --card-brd: rgba(255, 220, 224, 0.16);
+  --shadow: 0 18px 50px -18px rgba(0, 0, 0, 0.7);
+  --radius: 18px;
+  --maxw: 460px;
+  --ok: #7bd88f;
+  --err: #ffb0b8;
+}
+
+* { box-sizing: border-box; }
+
+/* display를 지정한 요소도 hidden 속성이면 반드시 숨김 (모달·선물상자 등) */
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: "Pretendard", system-ui, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 700px at 50% -10%, var(--bg-2), transparent 60%),
+    linear-gradient(160deg, var(--bg-1), var(--bg-0) 70%);
+  background-attachment: fixed;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* subtle sparkle field */
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(1.6px 1.6px at 20% 30%, rgba(255, 220, 180, 0.5), transparent),
+    radial-gradient(1.4px 1.4px at 75% 20%, rgba(255, 200, 200, 0.45), transparent),
+    radial-gradient(1.3px 1.3px at 40% 70%, rgba(255, 230, 200, 0.4), transparent),
+    radial-gradient(1.5px 1.5px at 85% 65%, rgba(255, 210, 190, 0.4), transparent),
+    radial-gradient(1.2px 1.2px at 15% 85%, rgba(255, 240, 220, 0.35), transparent);
+  opacity: 0.7;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: max(20px, env(safe-area-inset-top)) 18px 48px;
+}
+
+.screen { animation: fade 0.35s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ── 로그인 ── */
+.hero { text-align: center; padding: 40px 0 26px; }
+.eyebrow {
+  font-size: 12.5px; letter-spacing: 0.12em; color: var(--text-mut);
+  text-transform: none; margin: 0 0 14px;
+}
+.logo {
+  font-family: "Gaegu", "Pretendard", sans-serif;
+  font-weight: 700; font-size: 64px; margin: 0; line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 0 var(--red-deep), 0 0 34px rgba(255, 77, 94, 0.55);
+}
+.hero-sub { margin: 16px 0 0; color: var(--text-mut); font-size: 15.5px; }
+
+.name-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+  margin-top: 26px;
+}
+.name-grid .loading { grid-column: 1 / -1; text-align: center; color: var(--text-mut); }
+.name-chip {
+  font: inherit; font-size: 17px; font-weight: 600;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--card-brd);
+  border-radius: 14px;
+  padding: 16px 8px;
+  cursor: pointer;
+  transition: transform 0.12s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.name-chip:hover { transform: translateY(-2px); background: rgba(255, 77, 94, 0.16); border-color: var(--red-soft); }
+.name-chip:active { transform: translateY(0); }
+.name-chip:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* ── 공통: 상단바 ── */
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 6px 0 22px;
+}
+.who { color: var(--text-mut); font-size: 15px; }
+.who b { color: #fff; }
+.back {
+  font: inherit; font-size: 20px; line-height: 1;
+  width: 40px; height: 40px; flex: none;
+  color: var(--text); background: var(--card);
+  border: 1px solid var(--card-brd); border-radius: 12px;
+  cursor: pointer; transition: background 0.2s;
+}
+.back:hover { background: rgba(255, 77, 94, 0.18); }
+.page-title { margin: 0; font-size: 20px; font-weight: 700; }
+
+/* ── 메인 선택 ── */
+.main-choice { display: grid; gap: 16px; margin-top: 8px; }
+@media (min-width: 400px) { .main-choice { grid-template-columns: 1fr 1fr; } }
+.choice-card {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 8px; padding: 30px 18px;
+  font: inherit; color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--card-brd);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.14s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
+  overflow: hidden;
+}
+.choice-card::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(120px 120px at 50% 0%, rgba(255, 77, 94, 0.28), transparent 70%);
+  opacity: 0; transition: opacity 0.25s;
+}
+.choice-card:hover { transform: translateY(-4px); border-color: var(--red-soft); box-shadow: var(--shadow); }
+.choice-card:hover::before { opacity: 1; }
+.choice-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.choice-emoji { font-size: 44px; }
+.choice-title { font-size: 20px; font-weight: 700; }
+.choice-desc { font-size: 13px; color: var(--text-mut); }
+.badge {
+  position: absolute; top: 12px; right: 12px;
+  background: var(--gold); color: #4a2b00;
+  font-size: 11px; font-weight: 700;
+  padding: 3px 9px; border-radius: 999px;
+}
+
+/* ── 패널 ── */
+.panel {
+  background: var(--card);
+  border: 1px solid var(--card-brd);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.panel-title { margin: 0 0 4px; font-size: 16.5px; font-weight: 700; }
+.panel-hint { margin: 0 0 16px; font-size: 13px; color: var(--text-mut); }
+
+/* ── 폼 ── */
+.form { display: grid; gap: 16px; }
+.field { display: grid; gap: 7px; border: 0; padding: 0; margin: 0; }
+.field > span { font-size: 14px; font-weight: 600; }
+.field em { font-style: normal; color: var(--gold); font-weight: 500; font-size: 12px; }
+.field input[type="text"], .field textarea {
+  font: inherit; font-size: 15px; color: var(--text);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--card-brd);
+  border-radius: 12px;
+  padding: 12px 14px;
+  width: 100%; resize: vertical;
+  transition: border-color 0.2s, background 0.2s;
+}
+.field input::placeholder, .field textarea::placeholder { color: #b07a80; }
+.field input:focus, .field textarea:focus {
+  outline: none; border-color: var(--red); background: rgba(0, 0, 0, 0.32);
+}
+.counter { justify-self: end; color: var(--text-mut); font-size: 12px; }
+
+.days { display: flex; gap: 8px; }
+.days label {
+  flex: 1; position: relative; cursor: pointer;
+}
+.days input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.days span {
+  display: block; text-align: center; padding: 12px 0;
+  border: 1px solid var(--card-brd); border-radius: 12px;
+  font-weight: 600; transition: all 0.18s;
+}
+.days input:checked + span {
+  background: var(--red); border-color: var(--red); color: #fff;
+  box-shadow: 0 6px 16px -6px var(--red);
+}
+.days input:focus-visible + span { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* ── 버튼 ── */
+.btn {
+  font: inherit; font-size: 15.5px; font-weight: 700;
+  padding: 13px 20px; border-radius: 12px; cursor: pointer;
+  border: 1px solid transparent; transition: transform 0.12s, filter 0.2s, background 0.2s;
+}
+.btn:active { transform: translateY(1px); }
+.btn.primary {
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  color: #fff; box-shadow: 0 10px 22px -10px var(--red);
+}
+.btn.primary:hover { filter: brightness(1.07); }
+.btn.primary:disabled { background: #6d3a40; box-shadow: none; cursor: not-allowed; filter: none; opacity: 0.7; }
+.btn.ghost { background: transparent; color: var(--text); border-color: var(--card-brd); }
+.btn.ghost:hover { background: rgba(255, 255, 255, 0.06); }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.form-msg { margin: 2px 0 0; font-size: 13.5px; }
+.form-msg.ok { color: var(--ok); }
+.form-msg.err { color: var(--err); }
+
+/* ── 편지지 ── */
+.letter {
+  background:
+    repeating-linear-gradient(transparent, transparent 31px, var(--paper-line) 31px, var(--paper-line) 32px);
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: "Gaegu", "Pretendard", sans-serif;
+  font-size: 20px; line-height: 32px;
+  border-radius: 12px;
+  padding: 18px 20px;
+  min-height: 96px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05), var(--shadow);
+  white-space: pre-wrap; word-break: break-word;
+}
+.letter.small { font-size: 18px; min-height: 64px; }
+.letter-empty { color: var(--ink-soft); font-family: "Pretendard", sans-serif; font-size: 14px; line-height: 1.5; margin: 0; }
+
+/* ── 대상 카드 ── */
+.target-card { display: grid; gap: 12px; }
+.target-name {
+  font-size: 22px; font-weight: 700; color: #fff;
+  display: flex; align-items: center; gap: 8px;
+}
+.target-name .tag { font-size: 12px; font-weight: 600; color: var(--gold); background: rgba(246,196,83,0.14); padding: 3px 10px; border-radius: 999px; }
+.info-row { display: grid; grid-template-columns: 92px 1fr; gap: 4px 10px; font-size: 14.5px; }
+.info-row dt { color: var(--text-mut); }
+.info-row dd { margin: 0; }
+.info-row dd.empty { color: #a06a70; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chips span { background: rgba(255,77,94,0.16); border: 1px solid var(--card-brd); padding: 2px 10px; border-radius: 999px; font-size: 13px; }
+
+/* ── 모달 ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center;
+  background: rgba(20, 2, 6, 0.72);
+  backdrop-filter: blur(6px);
+  padding: 24px;
+  animation: fade 0.25s ease;
+}
+.modal {
+  width: 100%; max-width: 360px;
+  background: linear-gradient(180deg, #3a0912, #26060c);
+  border: 1px solid var(--card-brd);
+  border-radius: 22px;
+  padding: 30px 26px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.modal-emoji { font-size: 44px; margin: 0 0 8px; }
+.modal-title { margin: 0 0 10px; font-size: 21px; }
+.modal-title b { color: var(--red-soft); }
+.modal-desc { margin: 0; color: var(--text-mut); font-size: 14.5px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+.modal-actions .btn { flex: 1; }
+
+/* ── 마니또 공개 (선물상자) ── */
+.reveal-lead { font-size: 17px; color: var(--text); margin-bottom: 22px; line-height: 1.5; }
+.giftbox {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  margin: 0 auto; padding: 8px 20px 18px;
+  background: none; border: 0; cursor: pointer; font: inherit; color: var(--text-mut);
+}
+.giftbox-body {
+  font-size: 92px; line-height: 1;
+  filter: drop-shadow(0 12px 24px rgba(255,77,94,0.5));
+  animation: wob 1.6s ease-in-out infinite;
+}
+.giftbox-lid { display: none; }
+.giftbox-tap { font-size: 13px; }
+@keyframes wob { 0%,100% { transform: rotate(-4deg) translateY(0); } 50% { transform: rotate(4deg) translateY(-4px); } }
+.giftbox:hover .giftbox-body { animation-play-state: paused; transform: scale(1.05); }
+.giftbox:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 12px; }
+
+.reveal-result { animation: pop 0.5s cubic-bezier(.2,.9,.3,1.3); }
+@keyframes pop { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: none; } }
+.reveal-label { margin: 0; color: var(--text-mut); font-size: 15px; }
+.reveal-name {
+  font-family: "Gaegu", "Pretendard", sans-serif;
+  font-size: 52px; font-weight: 700; margin: 6px 0 4px; color: #fff;
+  text-shadow: 0 0 30px rgba(255, 77, 94, 0.6);
+}
+.reveal-note { margin: 0 0 22px; color: var(--text-mut); font-size: 14px; }
+
+/* ── 토스트 ── */
+.toast {
+  position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px);
+  z-index: 80;
+  background: #fff; color: #2a060c; font-weight: 600; font-size: 14px;
+  padding: 12px 20px; border-radius: 999px;
+  box-shadow: var(--shadow);
+  opacity: 0; transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none; max-width: 90vw;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
