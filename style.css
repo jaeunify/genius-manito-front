@@ -124,6 +124,13 @@ body {
 .page-title { margin: 0; font-size: 20px; font-weight: 700; }
 
 /* ── 메인 선택 ── */
+/* 메인 화면은 세로 가운데 정렬 */
+#screen-main {
+  min-height: calc(100dvh - max(20px, env(safe-area-inset-top)) - 48px);
+  display: flex; flex-direction: column; justify-content: center;
+}
+#screen-main .topbar { margin-top: -8px; }
+
 .main-choice { display: grid; gap: 16px; margin-top: 8px; }
 @media (min-width: 400px) { .main-choice { grid-template-columns: 1fr 1fr; } }
 .choice-card {
