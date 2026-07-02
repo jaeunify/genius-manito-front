@@ -84,27 +84,15 @@
   }
 
   /* ═══════════ 로그인 ═══════════ */
-  async function loadLogin() {
-    const grid = $("#name-grid");
-    grid.innerHTML = '<p class="loading">불러오는 중…</p>';
-    try {
-      const names = await api("/api/names");
-      if (!names.length) {
-        grid.innerHTML = '<p class="loading">선택할 수 있는 이름이 없어요.</p>';
-        return;
-      }
-      grid.innerHTML = "";
-      names.forEach((name) => {
-        const b = document.createElement("button");
-        b.className = "name-chip";
-        b.type = "button";
-        b.textContent = name;
-        b.addEventListener("click", () => openConfirm(name));
-        grid.appendChild(b);
-      });
-    } catch (e) {
-      grid.innerHTML = `<p class="loading">${e.message}</p>`;
+  function submitName(e) {
+    e.preventDefault();
+    const name = $("#name-input").value.trim();
+    if (!name) {
+      setMsg($("#login-msg"), "이름을 입력해주세요.", "err");
+      return;
     }
+    setMsg($("#login-msg"), "", "");
+    openConfirm(name);
   }
 
   let pendingName = null;
@@ -129,8 +117,8 @@
       showScreen("main");
     } catch (e) {
       closeConfirm();
+      setMsg($("#login-msg"), e.message, "err");
       toast(e.message);
-      loadLogin(); // 이미 선점된 경우 목록 갱신
     } finally {
       $("#confirm-yes").disabled = false;
     }
@@ -311,7 +299,8 @@
     $$("[data-nav]").forEach((el) =>
       el.addEventListener("click", () => showScreen(el.dataset.nav)));
 
-    // 이름 확인 모달
+    // 이름 입력 · 확인 모달
+    $("#name-form").addEventListener("submit", submitName);
     $("#confirm-yes").addEventListener("click", doClaim);
     $("#confirm-no").addEventListener("click", closeConfirm);
 
@@ -337,7 +326,6 @@
       showScreen("main");
     } else {
       showScreen("login");
-      loadLogin();
     }
   }
 

@@ -20,11 +20,14 @@
       <div class="hero">
         <p class="eyebrow">입사 1주년 · 몰래 챙기는 우리들의 비밀</p>
         <h1 class="logo">마니또</h1>
-        <p class="hero-sub">당신은 누구인가요?<br />이름을 고르면 그대로 고정돼요.</p>
+        <p class="hero-sub">당신은 누구인가요?<br />이름을 입력하면 그대로 고정돼요.</p>
       </div>
-      <div class="name-grid" id="name-grid" role="listbox" aria-label="이름 선택">
-        <p class="loading">불러오는 중…</p>
-      </div>
+      <form class="name-form" id="name-form">
+        <input type="text" id="name-input" class="name-input" placeholder="홍길동"
+               maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" />
+        <button type="submit" class="btn primary" id="name-submit">시작하기</button>
+        <p class="form-msg" id="login-msg" hidden></p>
+      </form>
     </section>
 
     <!-- ────── 메인 ────── -->
