@@ -86,7 +86,9 @@
   /* ═══════════ 로그인 ═══════════ */
   function submitName(e) {
     e.preventDefault();
-    const name = $("#name-input").value.trim();
+    const raw = $("#name-input").value;
+    const name = raw.trim();
+    console.log("[마니또] 이름 입력:", JSON.stringify(raw), "→ 정리:", JSON.stringify(name), "길이:", name.length);
     if (!name) {
       setMsg($("#login-msg"), "이름을 입력해주세요.", "err");
       return;
@@ -109,6 +111,7 @@
   async function doClaim() {
     if (!pendingName) return;
     const name = pendingName;
+    console.log("[마니또] claim 전송:", JSON.stringify(name), "→", API + "/api/claim");
     $("#confirm-yes").disabled = true;
     try {
       const res = await api("/api/claim", { method: "POST", body: { name } });
@@ -182,28 +185,55 @@
       $$("#pf-days input").forEach((c) => (c.checked = days.includes(c.value)));
     } catch (e) { /* 무시: 빈 폼 */ }
 
-    // 마니또 편지
-    const box = $("#letter-box");
-    try {
-      const { message } = await api("/api/me/letter");
-      if (message) box.textContent = message;
-      else box.innerHTML = '<p class="letter-empty">아직 편지가 도착하지 않았어요. 조금만 기다려요 :)</p>';
-    } catch { /* keep default */ }
+    // 상태 조회 (편지 도착 여부 / 답장 여부)
+    let me = null;
+    try { me = await api("/api/me"); } catch {}
+    const hasLetter = !!(me && me.hasLetter);
 
-    // 답장 상태
-    try {
-      const me = await api("/api/me");
-      if (me.replySent) lockReply();
-    } catch {}
+    // 마니또로부터 온 편지 — 편지 받기 전까지 비활성화
+    const box = $("#letter-box");
+    setPanelLocked(box, !hasLetter);
+    if (hasLetter) {
+      try {
+        const { message } = await api("/api/me/letter");
+        box.textContent = message || "";
+      } catch { /* keep default */ }
+    } else {
+      box.innerHTML = '<p class="letter-empty">아직 편지가 도착하지 않았어요. 조금만 기다려요 :)</p>';
+    }
+
+    // 마니또에게 보내는 쪽지 — 편지 받기 전까지 비활성화
+    if (!hasLetter) setReplyState("locked");
+    else if (me && me.replySent) setReplyState("sent");
+    else setReplyState("open");
   }
 
-  function lockReply() {
+  // 편지·감사쪽지처럼 아직 차례가 안 된 패널을 비활성화(흐리게) 처리
+  function setPanelLocked(childEl, locked) {
+    const panel = childEl.closest(".panel");
+    if (panel) panel.classList.toggle("locked", locked);
+  }
+
+  // 답장 폼 상태: locked(편지 전) / sent(이미 보냄) / open(작성 가능)
+  function setReplyState(state) {
     const ta = $("#reply-text");
     const btn = $("#reply-btn");
-    ta.disabled = true;
-    btn.disabled = true;
-    btn.textContent = "이미 보냈어요";
-    setMsg($("#reply-msg"), "감사 쪽지는 한 번만 보낼 수 있어요.", "ok");
+    const panel = ta.closest(".panel");
+    const disabled = state !== "open";
+    ta.disabled = disabled;
+    btn.disabled = disabled;
+    panel.classList.toggle("locked", state === "locked");
+
+    if (state === "locked") {
+      btn.textContent = "보내기";
+      setMsg($("#reply-msg"), "마니또의 편지를 받은 뒤에 답장할 수 있어요.", "");
+    } else if (state === "sent") {
+      btn.textContent = "이미 보냈어요";
+      setMsg($("#reply-msg"), "감사 쪽지는 한 번만 보낼 수 있어요.", "ok");
+    } else {
+      btn.textContent = "보내기";
+      setMsg($("#reply-msg"), "", "");
+    }
   }
 
   async function submitProfile(e) {
@@ -230,7 +260,7 @@
     if (!text) { setMsg($("#reply-msg"), "내용을 입력해주세요.", "err"); return; }
     try {
       await api("/api/me/reply", { method: "POST", body: { text } });
-      lockReply();
+      setReplyState("sent");
       toast("마니또에게 감사 쪽지를 보냈어요 🤫");
     } catch (err) {
       setMsg($("#reply-msg"), err.message, "err");
@@ -253,9 +283,10 @@
     const rbox = $("#reply-received-box");
     try {
       const { message } = await api("/api/me/reply-received");
+      setPanelLocked(rbox, !message);
       if (message) rbox.textContent = message;
       else rbox.innerHTML = '<p class="letter-empty">아직 답장이 없어요.</p>';
-    } catch { /* keep default */ }
+    } catch { setPanelLocked(rbox, true); /* keep default */ }
   }
 
   function renderTarget(t) {
