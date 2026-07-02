@@ -345,9 +345,11 @@ body {
 }
 .reveal-note { margin: 0 0 22px; color: var(--text-mut); font-size: 14px; }
 
-/* 편지 최초 공개 모달 */
-#modal-letter .letter { text-align: left; margin-top: 8px; }
-#modal-letter .btn { margin-top: 22px; }
+/* 편지·쪽지 최초 공개 모달 */
+#modal-letter .letter,
+#modal-reply .letter { text-align: left; margin-top: 8px; }
+#modal-letter .btn,
+#modal-reply .btn { margin-top: 22px; }
 
 /* ── 토스트 ── */
 .toast {

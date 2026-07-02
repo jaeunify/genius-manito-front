@@ -201,6 +201,22 @@
     $("#modal-letter").hidden = true;
   }
 
+  /* ── 받은 감사 쪽지 최초 공개 팝업 ── */
+  function openReplyReveal(message) {
+    $("#reply-reveal-text").textContent = message || "";
+    $("#modal-reply").hidden = false;
+    $("#replybox").hidden = false;
+    $("#reply-reveal-result").hidden = true;
+  }
+  function openReplybox() {
+    $("#replybox").hidden = true;
+    $("#reply-reveal-result").hidden = false;
+  }
+  function confirmReplyReveal() {
+    markSeen("reply");         // 확인 후에는 다시 최초 공개되지 않음
+    $("#modal-reply").hidden = true;
+  }
+
   /* ═══════════ 마니또 받기 ═══════════ */
   async function loadReceive() {
     // 내 정보
@@ -320,8 +336,14 @@
     try {
       const { message } = await api("/api/me/reply-received");
       setPanelLocked(rbox, !message);
-      if (message) { rbox.textContent = message; markSeen("give"); }
-      else rbox.innerHTML = '<p class="letter-empty">아직 답장이 없어요.</p>';
+      if (message) {
+        rbox.textContent = message;
+        markSeen("give");
+        // 감사 쪽지를 한 번도 확인한 적 없으면 최초 공개 연출
+        if (!isSeen("reply")) openReplyReveal(message);
+      } else {
+        rbox.innerHTML = '<p class="letter-empty">아직 답장이 없어요.</p>';
+      }
     } catch { setPanelLocked(rbox, true); /* keep default */ }
   }
 
@@ -378,6 +400,10 @@
     // 편지 최초 공개
     $("#letterbox").addEventListener("click", openLetterbox);
     $("#letter-confirm").addEventListener("click", confirmLetter);
+
+    // 받은 감사 쪽지 최초 공개
+    $("#replybox").addEventListener("click", openReplybox);
+    $("#reply-reveal-confirm").addEventListener("click", confirmReplyReveal);
 
     // 폼
     $("#profile-form").addEventListener("submit", submitProfile);
