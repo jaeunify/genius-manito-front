@@ -127,21 +127,34 @@
     }
   }
 
+  /* ═══════════ 레드닷 (안 본 알림) ═══════════ */
+  const SEEN_KEY = "manito_seen";
+  function getSeen() {
+    try { return JSON.parse(localStorage.getItem(SEEN_KEY)) || {}; }
+    catch { return {}; }
+  }
+  function isSeen(key) { return !!getSeen()[key]; }
+  function markSeen(key) {
+    const s = getSeen();
+    if (s[key]) return;
+    s[key] = true;
+    localStorage.setItem(SEEN_KEY, JSON.stringify(s));
+  }
+
   /* ═══════════ 메인 ═══════════ */
   async function loadMain() {
     try {
       const me = await api("/api/me");
       $("#main-name").textContent = me.name;
-      toggleBadge($("#badge-receive"), me.hasLetter, "편지 도착!");
-      toggleBadge($("#badge-give"), me.hasReplyReceived, "답장 도착!");
+      // 편지가 도착하면 '받기', 답장이 도착하면 '하기'가 활성화 → 레드닷
+      if (me.hasLetter && !isSeen("receive")) $("#badge-receive").hidden = false;
+      else $("#badge-receive").hidden = true;
+      if (me.hasReplyReceived && !isSeen("give")) $("#badge-give").hidden = false;
+      else $("#badge-give").hidden = true;
       if (!me.revealDone) openReveal();
     } catch (e) {
       toast(e.message);
     }
-  }
-  function toggleBadge(el, show, text) {
-    el.textContent = text;
-    el.hidden = !show;
   }
 
   /* ── 마니또 공개 팝업 ── */
@@ -189,6 +202,9 @@
     let me = null;
     try { me = await api("/api/me"); } catch {}
     const hasLetter = !!(me && me.hasLetter);
+
+    // 편지가 활성화된 상태로 이 화면을 열었으면 '확인함' → 레드닷 제거
+    if (hasLetter) markSeen("receive");
 
     // 마니또로부터 온 편지 — 편지 받기 전까지 비활성화
     const box = $("#letter-box");
@@ -284,7 +300,7 @@
     try {
       const { message } = await api("/api/me/reply-received");
       setPanelLocked(rbox, !message);
-      if (message) rbox.textContent = message;
+      if (message) { rbox.textContent = message; markSeen("give"); }
       else rbox.innerHTML = '<p class="letter-empty">아직 답장이 없어요.</p>';
     } catch { setPanelLocked(rbox, true); /* keep default */ }
   }
