@@ -270,7 +270,8 @@
       return;
     }
     if (letterPanel) letterPanel.hidden = false;
-    if (replyPanel) replyPanel.hidden = false;
+    // 보내는 쪽지 패널: 편지가 오기 전에는 통째로 숨김
+    if (replyPanel) replyPanel.hidden = !hasLetter;
 
     // 마니또로부터 온 편지 — 편지 받기 전까지 비활성화
     setPanelLocked(box, !hasLetter);
@@ -287,10 +288,11 @@
       box.innerHTML = '<p class="letter-empty">아직 편지가 도착하지 않았어요. 조금만 기다려요 :)</p>';
     }
 
-    // 마니또에게 보내는 쪽지 — 편지 받기 전까지 비활성화
-    if (!hasLetter) setReplyState("locked");
-    else if (me && me.replySent) setReplyState("sent");
-    else setReplyState("open");
+    // 마니또에게 보내는 쪽지 — 편지가 온 경우에만 (패널은 위에서 숨김 처리)
+    if (hasLetter) {
+      if (me && me.replySent) setReplyState("sent");
+      else setReplyState("open");
+    }
   }
 
   // 저장된 내 정보 요약 (접힘 상태에서 보여줌) — 현재 입력값 기준
