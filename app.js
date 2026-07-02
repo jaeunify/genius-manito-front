@@ -185,6 +185,22 @@
     }
   }
 
+  /* ── 편지 최초 공개 팝업 ── */
+  function openLetterReveal(message) {
+    $("#letter-reveal-text").textContent = message || "";
+    $("#modal-letter").hidden = false;
+    $("#letterbox").hidden = false;
+    $("#letter-reveal-result").hidden = true;
+  }
+  function openLetterbox() {
+    $("#letterbox").hidden = true;
+    $("#letter-reveal-result").hidden = false;
+  }
+  function confirmLetter() {
+    markSeen("letter");        // 확인 후에는 다시 최초 공개되지 않음
+    $("#modal-letter").hidden = true;
+  }
+
   /* ═══════════ 마니또 받기 ═══════════ */
   async function loadReceive() {
     // 내 정보
@@ -210,10 +226,14 @@
     const box = $("#letter-box");
     setPanelLocked(box, !hasLetter);
     if (hasLetter) {
+      let message = "";
       try {
-        const { message } = await api("/api/me/letter");
-        box.textContent = message || "";
+        const res = await api("/api/me/letter");
+        message = res.message || "";
+        box.textContent = message;
       } catch { /* keep default */ }
+      // 편지를 한 번도 확인한 적 없으면 최초 공개 연출
+      if (message && !isSeen("letter")) openLetterReveal(message);
     } else {
       box.innerHTML = '<p class="letter-empty">아직 편지가 도착하지 않았어요. 조금만 기다려요 :)</p>';
     }
@@ -354,6 +374,10 @@
     // 마니또 공개
     $("#giftbox").addEventListener("click", openGiftbox);
     $("#reveal-confirm").addEventListener("click", confirmReveal);
+
+    // 편지 최초 공개
+    $("#letterbox").addEventListener("click", openLetterbox);
+    $("#letter-confirm").addEventListener("click", confirmLetter);
 
     // 폼
     $("#profile-form").addEventListener("submit", submitProfile);

@@ -344,6 +344,10 @@ body {
 }
 .reveal-note { margin: 0 0 22px; color: var(--text-mut); font-size: 14px; }
 
+/* 편지 최초 공개 모달 */
+#modal-letter .letter { text-align: left; margin-top: 8px; }
+#modal-letter .btn { margin-top: 22px; }
+
 /* ── 토스트 ── */
 .toast {
   position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px);
