@@ -252,10 +252,15 @@
     const hasLetter = !!(me && me.hasLetter);
     const profileDone = !!(me && me.profileSubmitted);
 
-    // 편지가 도착하면 정보 수정 불가(접힘 + 수정 버튼 숨김),
+    // 편지가 도착하면 '나의 정보' 패널 자체를 숨김,
     // 아니면 입력 완료 시 접어두기 (수정 버튼으로 다시 펼침)
-    if (hasLetter) setProfileCollapsed(true, true);
-    else setProfileCollapsed(profileDone);
+    const profilePanel = $("#profile-panel");
+    if (hasLetter) {
+      profilePanel.hidden = true;
+    } else {
+      profilePanel.hidden = false;
+      setProfileCollapsed(profileDone);
+    }
 
     // 편지가 활성화된 상태로 이 화면을 열었으면 '확인함' → 레드닷 제거
     if (hasLetter) markSeen("receive");
