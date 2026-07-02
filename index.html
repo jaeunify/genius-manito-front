@@ -95,9 +95,13 @@
         <h2 class="page-title">💌 마니또 받기</h2>
       </header>
 
-      <div class="panel">
-        <h3 class="panel-title">나의 정보</h3>
-        <p class="panel-hint">마니또가 당신을 잘 챙길 수 있게 알려주세요.</p>
+      <div class="panel" id="profile-panel">
+        <div class="panel-head">
+          <h3 class="panel-title">나의 정보</h3>
+          <button type="button" class="btn-edit" id="profile-edit" hidden>수정</button>
+        </div>
+        <p class="panel-hint" id="profile-hint">마니또가 당신을 잘 챙길 수 있게 알려주세요.</p>
+        <div class="profile-summary" id="profile-summary" hidden></div>
         <form id="profile-form" class="form">
           <label class="field">
             <span>내 자리는 어디인가요?</span>

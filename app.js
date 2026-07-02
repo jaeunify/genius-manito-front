@@ -251,6 +251,9 @@
     try { me = await api("/api/me"); } catch {}
     const hasLetter = !!(me && me.hasLetter);
 
+    // 내 정보를 이미 입력했으면 접어두기 (수정 버튼으로 다시 펼침)
+    setProfileCollapsed(!!(me && me.profileSubmitted));
+
     // 편지가 활성화된 상태로 이 화면을 열었으면 '확인함' → 레드닷 제거
     if (hasLetter) markSeen("receive");
 
@@ -274,6 +277,43 @@
     if (!hasLetter) setReplyState("locked");
     else if (me && me.replySent) setReplyState("sent");
     else setReplyState("open");
+  }
+
+  // 저장된 내 정보 요약 (접힘 상태에서 보여줌) — 현재 입력값 기준
+  function renderProfileSummary() {
+    const seat = $("#pf-seat").value.trim();
+    const days = $$("#pf-days input:checked").map((c) => DAY_LABEL[c.value] || c.value);
+    const intro = $("#pf-intro").value.trim();
+    const giftSpot = $("#pf-giftspot").value.trim();
+    const contact = $("#pf-contact").value.trim();
+    const row = (label, val) =>
+      `<div class="info-row"><dt>${label}</dt>` +
+      (val ? `<dd>${escapeHtml(val)}</dd>` : `<dd class="empty">미입력</dd>`) +
+      `</div>`;
+    return (
+      row("자리", seat) +
+      `<div class="info-row"><dt>편한 날짜</dt>` +
+        (days.length ? `<dd><div class="chips">${days.map((d) => `<span>${d}</span>`).join("")}</div></dd>` : `<dd class="empty">미선택</dd>`) +
+      `</div>` +
+      row("소개", intro) +
+      row("선물 위치", giftSpot) +
+      row("연락처", contact)
+    );
+  }
+
+  // 내 정보 패널 접기(collapsed=true)/펼치기(false)
+  function setProfileCollapsed(collapsed) {
+    $("#profile-form").hidden = collapsed;
+    $("#profile-edit").hidden = !collapsed;
+    const summary = $("#profile-summary");
+    if (collapsed) {
+      summary.innerHTML = renderProfileSummary();
+      summary.hidden = false;
+      $("#profile-hint").textContent = "저장 완료! 바꾸려면 ‘수정’을 눌러요.";
+    } else {
+      summary.hidden = true;
+      $("#profile-hint").textContent = "마니또가 당신을 잘 챙길 수 있게 알려주세요.";
+    }
   }
 
   // 편지·감사쪽지처럼 아직 차례가 안 된 패널을 비활성화(흐리게) 처리
@@ -315,8 +355,8 @@
     };
     try {
       await api("/api/me/profile", { method: "PUT", body });
-      setMsg($("#profile-msg"), "저장했어요!", "ok");
       toast("내 정보를 저장했어요 💌");
+      setProfileCollapsed(true);   // 저장하면 다시 접힘
     } catch (err) {
       setMsg($("#profile-msg"), err.message, "err");
     }
@@ -423,6 +463,7 @@
 
     // 폼
     $("#profile-form").addEventListener("submit", submitProfile);
+    $("#profile-edit").addEventListener("click", () => setProfileCollapsed(false));
     $("#reply-form").addEventListener("submit", submitReply);
     $("#gift-form").addEventListener("submit", submitGift);
 
