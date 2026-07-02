@@ -151,10 +151,11 @@ body {
   border-radius: var(--radius);
   cursor: pointer;
   transition: transform 0.14s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
-  overflow: hidden;
+  overflow: visible;
 }
 .choice-card::before {
   content: ""; position: absolute; inset: 0;
+  border-radius: inherit;
   background: radial-gradient(120px 120px at 50% 0%, rgba(255, 77, 94, 0.28), transparent 70%);
   opacity: 0; transition: opacity 0.25s;
 }
