@@ -246,21 +246,33 @@
       $$("#pf-days input").forEach((c) => (c.checked = days.includes(c.value)));
     } catch (e) { /* 무시: 빈 폼 */ }
 
-    // 상태 조회 (편지 도착 여부 / 답장 여부)
+    // 상태 조회 (편지 도착 여부 / 답장 여부 / 내 정보 입력 여부)
     let me = null;
     try { me = await api("/api/me"); } catch {}
     const hasLetter = !!(me && me.hasLetter);
+    const profileDone = !!(me && me.profileSubmitted);
 
     // 편지가 도착하면 정보 수정 불가(접힘 + 수정 버튼 숨김),
     // 아니면 입력 완료 시 접어두기 (수정 버튼으로 다시 펼침)
     if (hasLetter) setProfileCollapsed(true, true);
-    else setProfileCollapsed(!!(me && me.profileSubmitted));
+    else setProfileCollapsed(profileDone);
 
     // 편지가 활성화된 상태로 이 화면을 열었으면 '확인함' → 레드닷 제거
     if (hasLetter) markSeen("receive");
 
-    // 마니또로부터 온 편지 — 편지 받기 전까지 비활성화
+    // 편지·쪽지 패널: 내 정보를 입력하기 전에는 통째로 숨김
     const box = $("#letter-box");
+    const letterPanel = box.closest(".panel");
+    const replyPanel = $("#reply-form").closest(".panel");
+    if (!profileDone) {
+      if (letterPanel) letterPanel.hidden = true;
+      if (replyPanel) replyPanel.hidden = true;
+      return;
+    }
+    if (letterPanel) letterPanel.hidden = false;
+    if (replyPanel) replyPanel.hidden = false;
+
+    // 마니또로부터 온 편지 — 편지 받기 전까지 비활성화
     setPanelLocked(box, !hasLetter);
     if (hasLetter) {
       let message = "";
@@ -361,7 +373,7 @@
     try {
       await api("/api/me/profile", { method: "PUT", body });
       toast("내 정보를 저장했어요 💌");
-      setProfileCollapsed(true);   // 저장하면 다시 접힘
+      loadReceive();   // 저장 후 갱신: 프로필 접힘 + 편지·쪽지 패널 표시
     } catch (err) {
       setMsg($("#profile-msg"), err.message, "err");
     }
@@ -391,9 +403,20 @@
       card.innerHTML = `<p class="letter-empty">${e.message}</p>`;
     }
 
-    // 기존 쪽지 불러오기 (letter API로 확인 불가 → me/target/profile엔 없음; gift는 별도 저장값 없어 빈칸 유지)
-    // 받은 감사 쪽지
+    // 상태 조회 (내가 선물 쪽지를 보냈는지)
+    let me = null;
+    try { me = await api("/api/me"); } catch {}
+    const hasSentGift = !!(me && me.hasSentGift);
+
+    // 받은 감사 쪽지 — 내가 선물 쪽지를 주기 전에는 패널 자체를 숨김
     const rbox = $("#reply-received-box");
+    const replyPanel = rbox.closest(".panel");
+    if (!hasSentGift) {
+      if (replyPanel) replyPanel.hidden = true;
+      return;
+    }
+    if (replyPanel) replyPanel.hidden = false;
+
     try {
       const { message } = await api("/api/me/reply-received");
       setPanelLocked(rbox, !message);
@@ -433,6 +456,7 @@
       await api("/api/me/gift", { method: "PUT", body: { message } });
       setMsg($("#gift-msg"), "쪽지를 남겼어요!", "ok");
       toast("선물 위치 쪽지를 남겼어요 🎁");
+      loadGive();   // 선물 쪽지를 보냈으니 '받은 감사 쪽지' 패널 표시
     } catch (err) {
       setMsg($("#gift-msg"), err.message, "err");
     }
