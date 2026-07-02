@@ -251,8 +251,10 @@
     try { me = await api("/api/me"); } catch {}
     const hasLetter = !!(me && me.hasLetter);
 
-    // 내 정보를 이미 입력했으면 접어두기 (수정 버튼으로 다시 펼침)
-    setProfileCollapsed(!!(me && me.profileSubmitted));
+    // 편지가 도착하면 정보 수정 불가(접힘 + 수정 버튼 숨김),
+    // 아니면 입력 완료 시 접어두기 (수정 버튼으로 다시 펼침)
+    if (hasLetter) setProfileCollapsed(true, true);
+    else setProfileCollapsed(!!(me && me.profileSubmitted));
 
     // 편지가 활성화된 상태로 이 화면을 열었으면 '확인함' → 레드닷 제거
     if (hasLetter) markSeen("receive");
@@ -302,14 +304,17 @@
   }
 
   // 내 정보 패널 접기(collapsed=true)/펼치기(false)
-  function setProfileCollapsed(collapsed) {
+  // lockEdit=true면 접힌 채 수정 버튼도 숨김 (편지 도착 후 수정 불가)
+  function setProfileCollapsed(collapsed, lockEdit = false) {
     $("#profile-form").hidden = collapsed;
-    $("#profile-edit").hidden = !collapsed;
+    $("#profile-edit").hidden = !collapsed || lockEdit;
     const summary = $("#profile-summary");
     if (collapsed) {
       summary.innerHTML = renderProfileSummary();
       summary.hidden = false;
-      $("#profile-hint").textContent = "저장 완료! 바꾸려면 ‘수정’을 눌러요.";
+      $("#profile-hint").textContent = lockEdit
+        ? "마니또에게 편지가 도착해서 정보는 더 이상 수정할 수 없어요."
+        : "저장 완료! 바꾸려면 ‘수정’을 눌러요.";
     } else {
       summary.hidden = true;
       $("#profile-hint").textContent = "마니또가 당신을 잘 챙길 수 있게 알려주세요.";
