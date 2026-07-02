@@ -151,10 +151,26 @@
       else $("#badge-receive").hidden = true;
       if (me.hasReplyReceived && !isSeen("give")) $("#badge-give").hidden = false;
       else $("#badge-give").hidden = true;
+      renderStatus(me);
       if (!me.revealDone) openReveal();
     } catch (e) {
       toast(e.message);
     }
+  }
+
+  /* ── 메인 상태 요약 ── */
+  // done: 완료 여부, doneText: 완료 시 문구 (미완료 문구는 HTML 기본값 유지)
+  function setStatus(id, done, doneText) {
+    const el = $("#" + id);
+    if (!el) return;
+    el.classList.toggle("done", done);
+    if (done) $(".status-text", el).textContent = doneText;
+  }
+  function renderStatus(me) {
+    setStatus("st-letter", !!me.hasLetter, "마니또에게 선물을 받았어요!");
+    setStatus("st-reply-sent", !!me.replySent, "마니또에게 답장을 보냈어요!");
+    setStatus("st-gift-sent", !!me.hasSentGift, "마니띠에게 선물을 보냈어요!");
+    setStatus("st-reply-received", !!me.hasReplyReceived, "마니띠에게 답장을 받았어요!");
   }
 
   /* ── 마니또 공개 팝업 ── */
