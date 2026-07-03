@@ -266,10 +266,11 @@
     if (hasLetter) markSeen("receive");
 
     // 편지·쪽지 패널: 내 정보를 입력하기 전에는 통째로 숨김
+    // 단, 프로필 입력을 건너뛰고 편지부터 받은 경우엔 편지를 볼 수 있어야 함
     const box = $("#letter-box");
     const letterPanel = box.closest(".panel");
     const replyPanel = $("#reply-form").closest(".panel");
-    if (!profileDone) {
+    if (!profileDone && !hasLetter) {
       if (letterPanel) letterPanel.hidden = true;
       if (replyPanel) replyPanel.hidden = true;
       return;
