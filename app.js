@@ -407,8 +407,11 @@
     try {
       const t = await api("/api/me/target/profile");
       card.innerHTML = renderTarget(t);
+      // 마니띠가 정보를 입력하기 전에는 편지 작성을 막음
+      setGiftFormEnabled(!!t.profileSubmitted);
     } catch (e) {
       card.innerHTML = `<p class="letter-empty">${e.message}</p>`;
+      setGiftFormEnabled(false);
     }
 
     // 상태 조회 (내가 선물 쪽지를 보냈는지)
@@ -454,6 +457,21 @@
       row("소개", t.intro) +
       row("선물 위치", t.giftSpot)
     );
+  }
+
+  // 마니띠가 정보를 입력했는지에 따라 편지 폼을 열고/잠금
+  function setGiftFormEnabled(enabled) {
+    const ta = $("#gift-text");
+    const btn = $("#gift-form button[type=submit]");
+    const panel = $("#gift-form").closest(".panel");
+    ta.disabled = !enabled;
+    if (btn) btn.disabled = !enabled;
+    if (panel) panel.classList.toggle("locked", !enabled);
+    if (enabled) {
+      setMsg($("#gift-msg"), "", "");
+    } else {
+      setMsg($("#gift-msg"), "마니띠가 아직 정보를 입력하지 않았어요. 정보를 입력하면 편지를 남길 수 있어요.", "");
+    }
   }
 
   async function submitGift(e) {
