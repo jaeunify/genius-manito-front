@@ -11,5 +11,5 @@ window.MANITO_CONFIG = {
   API_BASE:
     location.hostname === "localhost" || location.hostname === "127.0.0.1"
       ? "http://localhost:7778" // 로컬 개발용
-      : "https://cheats-review-ebook-willow.trycloudflare.com", // ← 터널 https 주소로 교체
+      : "https://fever-info-investigations-maria.trycloudflare.com", // ← 터널 https 주소로 교체
 };
