@@ -239,6 +239,8 @@
     try {
       const p = await api("/api/me/profile");
       $("#pf-seat").value = p.seat || "";
+      $("#pf-away").value = p.awayTimes || "";
+      $("#pf-lunch").value = p.lunchTime || "";
       $("#pf-intro").value = p.intro || "";
       $("#pf-giftspot").value = p.giftSpot || "";
       $("#pf-contact").value = p.contact || "";
@@ -305,6 +307,8 @@
   function renderProfileSummary() {
     const seat = $("#pf-seat").value.trim();
     const days = $$("#pf-days input:checked").map((c) => DAY_LABEL[c.value] || c.value);
+    const away = $("#pf-away").value.trim();
+    const lunch = $("#pf-lunch").value.trim();
     const intro = $("#pf-intro").value.trim();
     const giftSpot = $("#pf-giftspot").value.trim();
     const contact = $("#pf-contact").value.trim();
@@ -317,6 +321,8 @@
       `<div class="info-row"><dt>편한 날짜</dt>` +
         (days.length ? `<dd><div class="chips">${days.map((d) => `<span>${d}</span>`).join("")}</div></dd>` : `<dd class="empty">미선택</dd>`) +
       `</div>` +
+      row("자리 비우는 시간", away) +
+      row("점심시간", lunch) +
       row("소개", intro) +
       row("선물 위치", giftSpot) +
       row("연락처", contact)
@@ -374,6 +380,8 @@
     const body = {
       seat: $("#pf-seat").value.trim(),
       days: $$("#pf-days input:checked").map((c) => c.value),
+      awayTimes: $("#pf-away").value.trim(),
+      lunchTime: $("#pf-lunch").value.trim(),
       intro: $("#pf-intro").value.trim(),
       giftSpot: $("#pf-giftspot").value.trim(),
       contact: $("#pf-contact").value.trim(),
@@ -454,6 +462,8 @@
       `<div class="info-row"><dt>편한 날짜</dt>` +
         (days ? `<dd><div class="chips">${days}</div></dd>` : `<dd class="empty">아직 안 골랐어요</dd>`) +
       `</div>` +
+      row("자리 비우는 시간", t.awayTimes) +
+      row("점심시간", t.lunchTime) +
       row("소개", t.intro) +
       row("선물 위치", t.giftSpot)
     );
