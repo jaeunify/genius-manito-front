@@ -13,3 +13,4 @@ window.MANITO_CONFIG = {
       ? "http://localhost:7778" // 로컬 개발용
       : "https://provides-difference-especially-simple.trycloudflare.com", // ← 터널 https 주소로 교체
 };
+
