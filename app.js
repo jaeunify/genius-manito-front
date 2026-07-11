@@ -246,6 +246,8 @@
       $("#pf-contact").value = p.contact || "";
       const days = p.days || [];
       $$("#pf-days input").forEach((c) => (c.checked = days.includes(c.value)));
+      const days2 = p.days2 || [];
+      $$("#pf-days2 input").forEach((c) => (c.checked = days2.includes(c.value)));
     } catch (e) { /* 무시: 빈 폼 */ }
 
     // 상태 조회 (편지 도착 여부 / 답장 여부 / 내 정보 입력 여부)
@@ -307,6 +309,7 @@
   function renderProfileSummary() {
     const seat = $("#pf-seat").value.trim();
     const days = $$("#pf-days input:checked").map((c) => DAY_LABEL[c.value] || c.value);
+    const days2 = $$("#pf-days2 input:checked").map((c) => DAY_LABEL[c.value] || c.value);
     const away = $("#pf-away").value.trim();
     const lunch = $("#pf-lunch").value.trim();
     const intro = $("#pf-intro").value.trim();
@@ -318,8 +321,11 @@
       `</div>`;
     return (
       row("자리", seat) +
-      `<div class="info-row"><dt>편한 날짜</dt>` +
+      `<div class="info-row"><dt>이번 주 편한 날짜</dt>` +
         (days.length ? `<dd><div class="chips">${days.map((d) => `<span>${d}</span>`).join("")}</div></dd>` : `<dd class="empty">미선택</dd>`) +
+      `</div>` +
+      `<div class="info-row"><dt>다음 주 편한 날짜</dt>` +
+        (days2.length ? `<dd><div class="chips">${days2.map((d) => `<span>${d}</span>`).join("")}</div></dd>` : `<dd class="empty">미선택</dd>`) +
       `</div>` +
       row("자리 비우는 시간", away) +
       row("점심시간", lunch) +
@@ -380,6 +386,7 @@
     const body = {
       seat: $("#pf-seat").value.trim(),
       days: $$("#pf-days input:checked").map((c) => c.value),
+      days2: $$("#pf-days2 input:checked").map((c) => c.value),
       awayTimes: $("#pf-away").value.trim(),
       lunchTime: $("#pf-lunch").value.trim(),
       intro: $("#pf-intro").value.trim(),
@@ -452,6 +459,7 @@
 
   function renderTarget(t) {
     const days = (t.days || []).map((d) => `<span>${DAY_LABEL[d] || d}</span>`).join("");
+    const days2 = (t.days2 || []).map((d) => `<span>${DAY_LABEL[d] || d}</span>`).join("");
     const row = (label, val) =>
       `<div class="info-row"><dt>${label}</dt>` +
       (val ? `<dd>${escapeHtml(val)}</dd>` : `<dd class="empty">아직 안 적었어요</dd>`) +
@@ -459,8 +467,11 @@
     return (
       `<div class="target-name">${escapeHtml(t.targetName)} <span class="tag">내 마니또 대상</span></div>` +
       row("자리", t.seat) +
-      `<div class="info-row"><dt>편한 날짜</dt>` +
+      `<div class="info-row"><dt>이번 주 편한 날짜</dt>` +
         (days ? `<dd><div class="chips">${days}</div></dd>` : `<dd class="empty">아직 안 골랐어요</dd>`) +
+      `</div>` +
+      `<div class="info-row"><dt>다음 주 편한 날짜</dt>` +
+        (days2 ? `<dd><div class="chips">${days2}</div></dd>` : `<dd class="empty">아직 안 골랐어요</dd>`) +
       `</div>` +
       row("자리 비우는 시간", t.awayTimes) +
       row("점심시간", t.lunchTime) +
